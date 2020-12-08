@@ -1,0 +1,7 @@
+pyTelegramBotAPI
+pandas
+numpy
+vedis
+matplotlib
+basemap
+pyproj
