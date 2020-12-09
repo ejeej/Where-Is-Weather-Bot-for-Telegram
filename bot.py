@@ -5,6 +5,7 @@ import telebot
 import config
 from dbworker import reset_user, get_param, set_param, get_user_info
 from dfworker import get_tmpr, get_prcp, get_final, get_results
+from scipy.stats import skew
 
 
 bot = telebot.TeleBot(config.token)
@@ -15,14 +16,15 @@ def user_reset(message):
     uid = message.chat.id
     bot.send_message(uid, 'Hello! I am a WhereIsWeatherBot.\n\
         I can search for places in the world with particular weather conditions\n\
-        at particular week of the year.\
+        at particular week of the year.\n\
         You can write /start to begin a dialog.\n\
         Then I will ask you to send me the number of month and a day you are interested in.\n\
         After that you should specify the range of mean daily temperature (in Celcius) and\n\
         range of days with any precipitation per week.\n\
         Eventually, you will get an image of the world map with all places found according\n\
         to your criteria and links to Google map for at least five of them.\n\
-        You can send /start at any time to start over again.')
+        You can send /start at any time to start over again.\n\
+        Type /help to read these instructions again)
 
 @bot.message_handler(commands=["start"])
 def user_start(message):
@@ -53,7 +55,7 @@ def user_entering_tmpr_min(message):
         set_param(uid, 'df_filtered_week', df_filtered_week)
         set_param(uid, 'tmpr_min', tmpr_min)
         set_param(uid, 'tmpr_max', tmpr_max)
-        bot.send_message(uid, "What is the minimum daily mean temperature you are looking for (in \u00b0C)? Actual range in the world for time you've chosen is: [{}-{}]".format(get_param(uid, 'tmpr_min'), get_param(uid, 'tmpr_max')))
+        bot.send_message(uid, "What is the minimum daily mean temperature you are looking for (in \u00b0C)? Actual range in the world for time you've chosen is: [{}; {}]".format(get_param(uid, 'tmpr_min'), get_param(uid, 'tmpr_max')))
         set_param(uid, 'state', config.States.S_MIN_TEMP.value)
     else:
         bot.send_message(uid, "Something went wrong. Send me the correct day, please [1-%s]" % get_param(uid, 'last_day_in_month'))
@@ -70,10 +72,10 @@ def user_entering_tmpr_max(message):
         pass
     if good_response and get_param(uid, 'tmpr_min') <= int(response) <= get_param(uid, 'tmpr_max'):
         set_param(uid, 'tmpr_min_desired', response)
-        bot.send_message(uid, "What is the maximum daily mean temperature you are looking for (in \u00b0C)? Available range is: [{}-{}]".format(get_param(uid, 'tmpr_min_desired'), get_param(uid, 'tmpr_max')))
+        bot.send_message(uid, "What is the maximum daily mean temperature you are looking for (in \u00b0C)? Available range is: [{}; {}]".format(get_param(uid, 'tmpr_min_desired'), get_param(uid, 'tmpr_max')))
         set_param(uid, 'state', config.States.S_MAX_TEMP.value)
     else:
-        bot.send_message(uid, "Something went wrong. Send me the correct minimum temperature (in \u00b0C), please [{}-{}]".format(get_param(uid, 'tmpr_min'), get_param(uid, 'tmpr_max')))
+        bot.send_message(uid, "Something went wrong. Send me the correct minimum temperature (in \u00b0C), please [{}; {}]".format(get_param(uid, 'tmpr_min'), get_param(uid, 'tmpr_max')))
 
 @bot.message_handler(func=lambda message: get_param(message.chat.id, 'state') == config.States.S_MAX_TEMP.value)
 def user_entering_prcp_min(message):
@@ -94,7 +96,7 @@ def user_entering_prcp_min(message):
         bot.send_message(uid, "What is the minimum number of days with any kind of precipitation per week you prefer? By precipitation I mean any of the following: rain, snow, hail or thunder. Actual range of the number of such days per week in the world for chosen time is [{}-{}]".format(get_param(uid, 'prcp_min'), get_param(uid, 'prcp_max')))
         set_param(uid, 'state', config.States.S_MIN_PREC_DAYS.value)
     else:
-        bot.send_message(uid, "Something went wrong. Send me the correct maximum temperature (in \u00b0C), please [{}-{}]".format(get_param(uid, 'tmpr_min_desired'), get_param(uid, 'tmpr_max')))
+        bot.send_message(uid, "Something went wrong. Send me the correct maximum temperature (in \u00b0C), please [{}; {}]".format(get_param(uid, 'tmpr_min_desired'), get_param(uid, 'tmpr_max')))
 
 @bot.message_handler(func=lambda message: get_param(message.chat.id, 'state') == config.States.S_MIN_PREC_DAYS.value)
 def user_entering_prcp_max(message):
