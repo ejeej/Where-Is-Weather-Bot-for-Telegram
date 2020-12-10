@@ -12,17 +12,7 @@ bot = telebot.TeleBot(config.token)
 @bot.message_handler(commands=["help"])
 def user_reset(message):
     uid = message.chat.id
-    bot.send_message(uid, 'Hello! I am a WhereIsWeatherBot.\n\
-        I can search for places in the world with particular weather conditions\n\
-        at particular week of the year.\n\
-        You can write /start to begin a dialog.\n\
-        Then I will ask you to send me the number of month and a day you are interested in.\n\
-        After that you should specify the range of mean daily temperature (in Celcius) and\n\
-        range of days with any precipitation per week.\n\
-        Eventually, you will get an image of the world map with all places found according\n\
-        to your criteria and links to Google map for at least five of them.\n\
-        You can send /start at any time to start over again.\n\
-        Type /help to read these instructions again.')
+    bot.send_message(uid, 'Hello! I am a WhereIsWeatherBot.\nI can search for places in the world with particular weather conditions at particular week of the year.\nYou can write /start to begin a dialog.\nThen I will ask you to send me the number of month and a day you are interested in.\nAfter that you should specify the range of mean daily temperature (in Celcius) and the range of days with any precipitation per week that you prefer.\nEventually, you will get an image of the world map with all places found according to your criteria and links to Google map for at least five of them.\nYou can send /start at any time to start over again.\nType /help to read these instructions again.')
 
 @bot.message_handler(commands=["start"])
 def user_start(message):
