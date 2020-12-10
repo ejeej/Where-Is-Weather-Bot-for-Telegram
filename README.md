@@ -23,14 +23,15 @@ was obtained (country, region, settlement).
 Weekly weather data and location for every station are stored as weather_data.csv.
 
 Requirements:
-- pyTelegramBotAPI
-- pandas
-- numpy
-- scipy
-- vedis
-- matplotlib
-- basemap
-- pyproj
+- Python 3.8.6
+- pyTelegramBotAPI 3.7.4
+- pandas 1.1.5
+- numpy 1.19.4
+- scipy 1.5.4
+- vedis 0.7.1
+- matplotlib 3.3.3
+- basemap 1.2.2
+- pyproj 3.0.0
 
 The most difficult part is to install Basemap. For Windows you could do it by installing
 two compiled Python libraries:
