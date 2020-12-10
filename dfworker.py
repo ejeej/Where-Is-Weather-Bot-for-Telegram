@@ -6,6 +6,7 @@ import matplotlib.cm as cm
 import numpy as np
 import pandas
 from mpl_toolkits.basemap import Basemap
+from scipy.stats import skew
 
 
 def get_tmpr(uid, df_file, month, day):
@@ -75,12 +76,15 @@ def get_results(uid, df_file):
     if len(lngs) > 500:
         set_size = 10
         set_alpha = 0.5
+        set_edge = 'face'
     elif len(lngs) > 100:
         set_size = 15
         set_alpha = 0.5
+        set_edge = 'dimgray'
     else:
         set_size = 20
         set_alpha = 0.6
+        set_edge = 'black'
 
     if df['TEMP'].max() - df['TEMP'].min() > 1:
         if df['TEMP'].min() < 0:
@@ -101,7 +105,7 @@ def get_results(uid, df_file):
     elif df['TEMP'].max() - df['TEMP'].min() > 10:
         set_ticks = list(range(df['TEMP'].min(), df['TEMP'].max()+1, 2))
     else:
-        set_ticks = list(range(df['TEMP'].min(), df['TEMP'].max()+1, 5))
+        set_ticks = list(range(df['TEMP'].min(), df['TEMP'].max()+1))
             
     fig, ax = plt.subplots(figsize=(16, 8))
     m = Basemap(ax=ax, llcrnrlon=-170, llcrnrlat=-60, urcrnrlon=190, urcrnrlat=85)
@@ -110,11 +114,11 @@ def get_results(uid, df_file):
     m.drawmapboundary(fill_color='lightcyan')
     m.fillcontinents(color='silver', lake_color='lightcyan')
     if df['TEMP'].max() - df['TEMP'].min() > 1:
-        dots = ax.scatter(lngs, lats, cmap=set_cmap, c=temps, s=set_size, alpha=set_alpha, zorder=10)
-        plt.colorbar(dots, orientation='horizontal', pad=0.01, aspect=50, ticks=set_ticks), 
+        dots = ax.scatter(lngs, lats, cmap=set_cmap, c=temps, s=set_size, alpha=set_alpha, edgecolors=set_edge, zorder=10)
+        plt.colorbar(dots, orientation='horizontal', pad=0.01, aspect=50, ticks=set_ticks, 
                  format='%d\u00b0C')
     else:
-        ax.scatter(lngs, lats, c='red', s=set_size, alpha=set_alpha, zorder=10)
+        ax.scatter(lngs, lats, c='red', s=set_size, alpha=set_alpha, edgecolors=set_edge, zorder=10)
         
     plt.savefig(str(uid) + '-map.png', bbox_inches='tight', pad_inches=0)
     
@@ -125,8 +129,12 @@ def get_results(uid, df_file):
     
     df_selected = df[df['COUNTRY'].isin(selected_countries)]
     
-    selected_places = df_selected.groupby('COUNTRY').agg(np.random.choice)
-    
+    if df_selected.shape[0] > 5:
+        selected_places = df_selected.groupby('COUNTRY').agg(np.random.choice)
+    else:
+        selected_places = df_selected
+
+    places = selected_places['PLACE']
     urls = selected_places[['LATITUDE','LONGITUDE']].apply(lambda x: 'https://maps.google.com/?q=' + str(x['LATITUDE']) + ',' + str(x['LONGITUDE']) + '&ll=' + str(x['LATITUDE']) + ',' + str(x['LONGITUDE']) +'&z=10', axis=1).tolist()
         
-    return (str(uid) + '-map.png', len(df['PLACE'].unique().tolist()), urls)
+    return (str(uid) + '-map.png', len(df['PLACE'].unique().tolist()), places, urls)

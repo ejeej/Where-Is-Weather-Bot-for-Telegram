@@ -20,10 +20,15 @@ def reset_user(uid):
 def get_param(uid, param):
     with Vedis(config.db_file) as db:
         usr_dict = eval(db[uid].decode())
+        if not usr_dict:
+            db[uid] = str({})
+            usr_dict = {}
         value = usr_dict.get(param)
         try:
             value = int(value)
         except ValueError:
+            pass
+        except TypeError:
             pass
         return value
 

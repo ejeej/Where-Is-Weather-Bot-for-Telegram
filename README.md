@@ -26,6 +26,7 @@ Requirements:
 - pyTelegramBotAPI
 - pandas
 - numpy
+- scipy
 - vedis
 - matplotlib
 - basemap

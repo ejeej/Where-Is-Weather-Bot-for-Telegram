@@ -5,8 +5,6 @@ import telebot
 import config
 from dbworker import reset_user, get_param, set_param, get_user_info
 from dfworker import get_tmpr, get_prcp, get_final, get_results
-from scipy.stats import skew
-
 
 bot = telebot.TeleBot(config.token)
 
@@ -24,7 +22,7 @@ def user_reset(message):
         Eventually, you will get an image of the world map with all places found according\n\
         to your criteria and links to Google map for at least five of them.\n\
         You can send /start at any time to start over again.\n\
-        Type /help to read these instructions again)
+        Type /help to read these instructions again.')
 
 @bot.message_handler(commands=["start"])
 def user_start(message):
@@ -125,17 +123,20 @@ def user_entering_prcp(message):
                 get_param(uid, 'prcp_max_desired')
             )
         )
-        map_file, record_count, urls = get_results(uid, get_param(uid, 'df_filtered_final'))
+        map_file, record_count, places, urls = get_results(uid, get_param(uid, 'df_filtered_final'))
         set_param(uid, 'map', map_file)
         set_param(uid, 'record_count', record_count)
-        set_param(uid, 'urls', urls)
 
-        bot.send_message(uid, "I found %s unique places in the world with parameters of your choice.\nHere are some of them:" % get_param(uid, 'record_count'))
-        bot.send_message(uid, '\n'.join(eval(get_param(uid, 'urls'))))
+        bot.send_message(uid, "Here is a map with all records I've found for you:")
+        bot.send_photo(uid, open(get_param(uid, 'map'), 'rb'))
 
-        bot.send_message(uid, "I also have a map with all records for you:")
-        bot.send_photo(uid, open(get_param(uid, 'map'), 'rb'), caption='Map')
-
+        bot.send_message(uid, "There are %s unique places in the world with parameters of your choice.\nHere are some of them:" % get_param(uid, 'record_count'))
+        
+        for i in range(len(urls)):
+            set_param(uid, 'url', urls[i])
+            set_param(uid, 'place', places[i])
+            bot.send_message(uid, "{}: {}".format(get_param(uid, 'place'), get_param(uid, 'url')))
+            
         bot.send_message(uid, "Good luck! Have a nice trip!")
 
         set_param(uid, 'state', config.States.S_START.value)
