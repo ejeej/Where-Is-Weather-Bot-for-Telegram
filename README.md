@@ -9,8 +9,7 @@ links to Google Maps for 5 randomly selected points.
 Plan to add several features to the bot:
 - ask for acceptable kinds of precipitation and filter results according to it;
 - ask about extreme weather conditions (as tornado, storm wind, shower, extreme heat or cold,
-and extreme daily temperature range) and filter results according to it;
-- give the full list of countries with selected points on request.
+and extreme daily temperature range) and filter results according to it.
 
 Weather data was taken from The Integrated Surface Hourly (ISH) dataset published by 
 [National Climatic Data Center, NESDIS, NOAA, U.S. Department of Commerce]
