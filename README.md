@@ -39,3 +39,5 @@ of your OS and Python)
 - basemap: https://www.lfd.uci.edu/~gohlke/pythonlibs/#basemap (choose the suitable version
 of your OS and Python)
 Eventually, you should be able to use Basemap in your Python scripts.
+
+![image](https://user-images.githubusercontent.com/9775181/193413028-3f36837d-ef24-4b65-a50e-b5b7e11ab81c.png)
